@@ -3,12 +3,6 @@ name: UI testing
 on:
   workflow_dispatch:
     inputs:
-      grid_url:
-        required: true
-        type: string
-        description: Grid to run tests on (local by default)
-        default: http://localhost:4444
-
       chrome_131_0:
         description: 'Chrome (131.0)'
         required: false
@@ -34,20 +28,15 @@ jobs:
           distribution: 'temurin'
           java-version: '23'
 
-      - name: Launch standalone grid - Chrome
-        if: ${{ contains(github.event.inputs.grid_url, 'localhost') }}
+      - name: Install Chrome Browser
         run: |
-          docker run --name grid_container -d -p 4444:4444 --shm-size=2gb selenium/standalone-chrome:131.0-chromedriver-131.0-grid-4.27.0-20250101
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
 
       - name: Run Tests
         run: |
           export BROWSER=chrome
-          export GRID_URL=${{ github.event.inputs.grid_url }}
-          
           mvn -q test
-          
-          # Tear down grid if exists
-          docker stop grid_container || true
 
   TestFirefox_133_0:
     name: Test Firefox 133.0
@@ -63,17 +52,12 @@ jobs:
           distribution: 'temurin'
           java-version: '23'
 
-      - name: Launch standalone grid - Firefox
-        if: ${{ contains(github.event.inputs.grid_url, 'localhost') }}
+      - name: Install Firefox Browser
         run: |
-          docker run --name grid_container -d -p 4444:4444 --shm-size=2gb selenium/standalone-firefox:133.0-geckodriver-0.35-grid-4.27.0-20250101
+          sudo apt-get update
+          sudo apt-get install -y firefox
 
       - name: Run Tests
         run: |
           export BROWSER=firefox
-          export GRID_URL=${{ github.event.inputs.grid_url }}
-          
-          mvn test 
-          
-          # Tear down grid if exists
-          docker stop grid_container || true
+          mvn -q test
