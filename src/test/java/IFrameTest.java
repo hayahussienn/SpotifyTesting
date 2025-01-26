@@ -52,6 +52,7 @@ public class IFrameTest
         WebElement playButton = driver.findElement(By.cssSelector(".playButton.medium"));
         playButton.click();
 
+
         WebElement pauseButton = driver.findElement(By.cssSelector(".playButton__overlay"));
         pauseButton.click();
 
